@@ -2,37 +2,41 @@
 <html>
   <head>
     <style>
-      body {
-        font: 10px sans-serif;
-      }
-      .axis path,
-      .axis line {
+      /* tell the SVG path to be a thin blue line without any area fill */
+      path {
+        stroke: steelblue;
+        stroke-width: 1;
         fill: none;
-          stroke: #000;
-            shape-rendering: crispEdges;
-          }
+      }
+      
+      .axis {
+        shape-rendering: crispEdges;
+      }
 
-          .bar {
-            fill: steelblue;
-          }
+      .x.axis line {
+        stroke: lightgrey;
+      }
 
-          .x.axis path {
-            display: none;
-          }
+      .x.axis .minor {
+        stroke-opacity: .5;
+      }
 
-          .legend line {
-            stroke: #000;
-              shape-rendering: crispEdges;
-          }
-      </style>
+      .x.axis path {
+        display: none;
+      }
+
+      .y.axis line, .y.axis path {
+        fill: none;
+        stroke: #000;
+      }
+    </style>
   </head>
   <body>
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-    <div id="chart">
-    </div>
+    <div id="graph" class="aGraph" style="position:absolute;top:0px;left:0; float:left;"></div>
     <script type="text/javascript">
       
-      var data = [ 
+      var sunData = [ 
       "0713 1623  0658 1659  0620 1734  0527 1810  0440 1844  0410 1914  0411 1925  0437 1904  0510 1818  0541 1726  0618 1638  0654 1613",
       "0714 1624  0657 1700  0618 1735  0525 1811  0438 1845  0410 1915  0412 1925  0438 1903  0511 1817  0543 1724  0619 1637  0655 1613",
       "0714 1624  0656 1701  0616 1737  0524 1812  0437 1846  0409 1916  0413 1924  0439 1901  0512 1815  0544 1722  0620 1635  0656 1612",
@@ -74,7 +78,7 @@
         var day = [];
 
         for(i=0;i<=30;i++){
-         day = data[i].split("  ")[month];
+         day = sunData[i].split("  ")[month];
          day = day.split(" ");
          monthData.push(day);
         }
@@ -117,6 +121,66 @@
 
         return year;
       };
+
+
+    // define dimensions of graph
+    var m = [80, 80, 80, 80]; // margins
+    var w = 1000 - m[1] - m[3]; // width
+    var h = 400 - m[0] - m[2]; // height
+    
+    // create a simple data array that we'll plot with a line (this array represents only the Y values, X will just be the index location)
+    var data = sunTypeByMonth(1,'set');
+
+    // X scale will fit all values from data[] within pixels 0-w
+    var x = d3.scale.linear().domain([0, data.length]).range([0, w]);
+    // Y scale will fit values from 0-10 within pixels h-0 (Note the inverted domain for the y-scale: bigger is up!)
+    var y = d3.scale.linear().domain([0, 2000]).range([h, 0]);
+      // automatically determining max range can work something like this
+      // var y = d3.scale.linear().domain([0, d3.max(data)]).range([h, 0]);
+
+    // create a line function that can convert data[] into x and y points
+    var line = d3.svg.line()
+      // assign the X function to plot our line as we wish
+      .x(function(d,i) { 
+        // verbose logging to show what's actually being done
+        console.log('Plotting X value for data point: ' + d + ' using index: ' + i + ' to be at: ' + x(i) + ' using our xScale.');
+        // return the X coordinate where we want to plot this datapoint
+        return x(i); 
+      })
+      .y(function(d) { 
+        // verbose logging to show what's actually being done
+        console.log('Plotting Y value for data point: ' + d + ' to be at: ' + y(d) + " using our yScale.");
+        // return the Y coordinate where we want to plot this datapoint
+        return y(d); 
+      })
+
+      // Add an SVG element with the desired dimensions and margin.
+      var graph = d3.select("#graph").append("svg:svg")
+            .attr("width", w + m[1] + m[3])
+            .attr("height", h + m[0] + m[2])
+          .append("svg:g")
+            .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+
+      // create yAxis
+      var xAxis = d3.svg.axis().scale(x).tickSize(-h).tickSubdivide(true);
+      // Add the x-axis.
+      graph.append("svg:g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + h + ")")
+            .call(xAxis);
+
+
+      // create left yAxis
+      var yAxisLeft = d3.svg.axis().scale(y).ticks(4).orient("left");
+      // Add the y-axis to the left
+      graph.append("svg:g")
+            .attr("class", "y axis")
+            .attr("transform", "translate(-25,0)")
+            .call(yAxisLeft);
+      
+        // Add the line by appending an svg:path element with the data line we created above
+      // do this AFTER the axes above so that the line is above the tick-lines
+        graph.append("svg:path").attr("d", line(data));
 
 
     </script>
