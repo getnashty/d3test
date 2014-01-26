@@ -34,7 +34,7 @@
   <body>
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <div id="graph" class="aGraph" style="position:absolute;top:0px;left:0; float:left;"></div>
-    Days of the month
+    Chart of sunsets...Each line is 1 month, bottom is days
     <script type="text/javascript">
       
       var sunData = [ 
@@ -137,7 +137,7 @@
     };
 
     // Y scale will fit values from 0-10 within pixels h-0 (Note the inverted domain for the y-scale: bigger is up!)
-    var y = d3.scale.linear().domain([1600, 1700]).range([h, 0]);
+    var y = d3.scale.linear().domain([1600, 2000]).range([h, 0]);
       // automatically determining max range can work something like this
       // var y = d3.scale.linear().domain([0, d3.max(data)]).range([h, 0]);
 
@@ -152,18 +152,14 @@
            var line = d3.svg.line()
              // assign the X function to plot our line as we wish
              .x(function(d,i) { 
-               // verbose logging to show what's actually being done
-               console.log('Plotting X value for data point: ' + d + ' using index: ' + i + ' to be at: ' + lineData(i) + ' using our xScale.');
                // return the X coordinate where we want to plot this datapoint
                return lineData(i); 
              })
              .y(function(d) { 
-               // verbose logging to show what's actually being done
-               console.log('Plotting Y value for data point: ' + d + ' to be at: ' + y(d) + " using our yScale.");
                // return the Y coordinate where we want to plot this datapoint
                return y(d); 
              });
-             graph.append("svg:path").attr("d", line(lineData));
+             graph.append("svg:path").attr("d", line(sunTypeByMonth(c, 'set')));
         }
       };
 
