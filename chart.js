@@ -1,16 +1,13 @@
-(function(){
-  var chart = circularHeatChart()
-    .innerRadius(20)
-    .radialLabels(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])
-    .segmentLabels(["Midnight", "1am", "2am", "3am", "4am", "5am", "6am", "7am", "8am", "9am", "10am",
-    "11am", "Midday", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm"]);
+var chart = circularHeatChart()
+  .segmentHeight(10)
+  .innerRadius(20);
 
-var energyData = [ 0.176042, 0.096146, 0.076414, 0.192478, 0.134997, 0.152271 ];
+var data = [];
+for(var i=0; i<240; i++) data[i] = i;
 
 d3.select('#chart')
     .selectAll('svg')
-    .data([energyData])
+    .data([data])
     .enter()
     .append('svg')
     .call(chart);
-}());

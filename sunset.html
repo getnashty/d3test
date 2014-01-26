@@ -1,15 +1,31 @@
-<!DOCTYPE>
+<!DOCTYPE html>
 <html>
   <head>
-    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <script src="circularHeatChart.js" charset="utf-8"></script>
-    <script src="chart.js" charset="utf-8"></script>
+    <link href="css/style.css" media="all" rel="stylesheet" type="text/css">
+    <link href="css/svg.css" media="all" rel="stylesheet" type="text/css">
   </head>
   <body>
-
-    <div id="#chart">
+    <div id="chart">
     </div>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      var chart = circularHeatChart()
+        .segmentHeight(14)
+        .innerRadius(24)
+        .numSegments(12)
+        .segmentLabels(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]);
 
+      var data = [];
+      for(var i=0; i<240; i++) data[i] = i;
+
+      d3.select('#chart')
+          .selectAll('svg')
+          .data([data])
+          .enter()
+          .append('svg')
+          .call(chart);
+    </script>
   </body>
 </html
 >
