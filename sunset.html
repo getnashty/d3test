@@ -49,8 +49,8 @@
         var monthData = [];
         var day = [];
 
-        for(i=0;i<30;i++){
-         day = data[i].split("  ")[month-1];
+        for(i=0;i<=30;i++){
+         day = data[i].split("  ")[month];
          day = day.split(" ");
          monthData.push(day);
         }
@@ -58,13 +58,26 @@
         return monthData;
       };
 
-      console.dir(dataByMonth(1));
+      var allData = function(){
+        var i;
+        var year = [];
 
+        for(i=0;i<=11;i++){
+          var month = [];
+          month = month.concat.apply(month, dataByMonth(i));
+          year.push(month);
+        }
+
+        return year;
+      };
+
+      console.dir(allData());
 
       var chart = circularHeatChart()
-        .segmentHeight(14)
-        .innerRadius(24)
+        .segmentHeight(15)
+        .innerRadius(10)
         .numSegments(12)
+        .radialLabels(["12AM","1AM","2AM","3AM","4AM","5AM","6AM","7AM","8AM","9AM","10AM","11AM","12PM","1PM","2PM","3PM","4PM","5PM","6PM","7PM","8PM","9PM","10PM","11PM"])
         .segmentLabels(["January", "February", "March", "April", "May", "June", "July", "August", "Septempber", "October", "November", "December"]);
 
       var data1 = [];
@@ -73,7 +86,7 @@
 
       d3.select('#chart')
           .selectAll('svg')
-          .data([dataByMonth(1)])
+          .data([allData()])
           .enter()
           .append('svg')
           .call(chart);
