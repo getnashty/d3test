@@ -88,6 +88,18 @@
       };
 
 
+        var cleanArray = function(actual){
+          var newArray = new Array();
+          for(var i = 0; i<actual.length; i++){
+              if (actual[i]){
+                newArray.push(actual[i]);
+            }
+          }
+          return newArray;
+        };
+
+
+
       //Returns an array for an entire month with just the
       //rise or set times based on whatever is called
       var sunTypeByMonth = function(month,type){
@@ -104,7 +116,7 @@
         for(i=0;i<=30;i++){
           sun.push(monthData[i][type]);  
         }
-        return sun;
+        return cleanArray(sun);
 
       };
 

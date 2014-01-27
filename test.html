@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <div id="rect">
+    </div>
+    <script src="d3.v3.min.js"></script>
+    <script type="text/javascript">
+
+      //THIS MAKES A CANVAS
+      var rectangle = d3.select('#rect').
+          append("svg:svg").
+          attr("width", 450).
+          attr("height", 300);
+
+          //THIS ADDS A RECTANGLE
+          rectangle.append("svg:rect").
+          attr("x", 100).
+          attr("y", 100).
+          attr("height", 100).
+          attr("width", 200);
+
+    </script>
+  </body>
+</html>
