@@ -15,9 +15,6 @@
   <body>
     <div id="sunset">
     </div>
-    <div id="key">
-    
-    </div>
     <script src="d3.v3.min.js"></script>
     <script type="text/javascript">
 
@@ -63,9 +60,9 @@
       "0704 1651  0624 1731  0537 1803  0447 1838  0414 1910  0409 1925  0431 1910  0503 1828  0536 1735  0610 1646  0648 1615  0712 1618",
       "0703 1652  0623 1732  0536 1805  0445 1839  0413 1910  0410 1925  0432 1909  0504 1827  0537 1733  0611 1644  0649 1614  0712 1619",
       "0702 1653  0621 1733  0534 1806  0444 1841  0412 1911  0410 1925  0433 1908  0505 1825  0538 1731  0613 1643  0650 1614  0713 1619",
-      "0701 1655  ---- ----  0532 1807  0443 1842  0412 1912  0411 1925  0434 1907  0506 1823  0539 1729  0614 1642  0652 1614  0713 1620",
-      "0700 1656  ---- ----  0530 1808  0441 1843  0411 1913  0411 1925  0435 1906  0507 1822  0540 1728  0615 1640  0653 1613  0713 1621",
-      "0659 1657  ---- ----  0529 1809  ---- ----  0411 1914  ---- ----  0436 1905  0509 1820  ---- ----  0616 1639  ---- ----  0713 1622"];
+      "0701 1655  xxxx xxxx  0532 1807  0443 1842  0412 1912  0411 1925  0434 1907  0506 1823  0539 1729  0614 1642  0652 1614  0713 1620",
+      "0700 1656  xxxx xxxx  0530 1808  0441 1843  0411 1913  0411 1925  0435 1906  0507 1822  0540 1728  0615 1640  0653 1613  0713 1621",
+      "0659 1657  xxxx xxxx  0529 1809  xxxx xxxx  0411 1914  xxxx xxxx  0436 1905  0509 1820  xxxx xxxx  0616 1639  xxxx xxxx  0713 1622"];
 
       var data = [];
 
@@ -83,7 +80,7 @@
           for(i=1;i<32;i++){
            day = sunData[i-1].split("  ")[m];
            day = day.split(" ");
-           if(day[0] !== "----"){
+           if(day[0] != "xxxx"){
              date = {date: new Date(2014, m, i), sunrise: [day[0].substring(0,2), day[0].substring(2,4)], sunset: [day[1].substring(0,2), day[1].substring(2,4)]};
            }
            data.push(date);
@@ -204,10 +201,7 @@
       lineGroup.
         append("svg:path").
         attr("d", sunriseLine(data)).
-        attr("fill", "steelblue").
-        on("mousemove", function(){
-          d3.select("#key").html(x.invert(d3.event.offsetX - padding));
-        });
+        attr("fill", "steelblue");
 
       var sunsetLine = d3.svg.area().
         x(function(d) { return x(d.date); }).
@@ -215,13 +209,9 @@
         y1(function(d) { return y(new Date(2014, 0, 1, d.sunset[0], d.sunset[1])); }).
         interpolate("linear");
 
-      lineGroup.
-        append("svg:path").
+      lineGroup.append("svg:path").
         attr("d", sunsetLine(data)).
-        attr("fill", "steelblue").
-        on("mousemove", function(){
-          d3.select("#key").html(x.invert(d3.event.offsetX - padding));
-        });
+        attr("fill", "steelblue");
 
       //Noon line
       lineGroup.append("svg:line").
@@ -229,12 +219,7 @@
         attr("y1", d3.round(y(new Date(2014, 0, 1, 12))) + 0.5).
         attr("x2", width).
         attr("y2", d3.round(y(new Date(2014, 0, 1, 12))) + 0.5).
-        attr("stroke", "lightgray").
-        on("mousemove", function(){
-          d3.select("#key").html(x.invert(d3.event.offsetX - padding));
-        });
-
-
+        attr("stroke", "lightgray");
     </script>
   </body>
 </html>
