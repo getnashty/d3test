@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <style>
+      line.crisp{
+        shape-rendering:crispEdges;
+      }
+      div#sunset{
+        fill:gray;
+        font-family:Helvetica, sans-serif;
+        font-size:10px;
+      }
+    </style>
   </head>
   <body>
     <div id="sunset">
@@ -8,6 +18,154 @@
     <script src="d3.v3.min.js"></script>
     <script type="text/javascript">
 
+      //Setting up the canvas
+      var width = 700;
+      var height = 525;
+      var padding = 40;
+
+      //Setting up the axis'
+      //X is going to be time, that spans the year
+      //Y is going to 24 hours of the day
+      var x = d3.time.scale().domain([new Date(2014, 0, 1), new Date(2014, 11, 31)]).range([0,width]);
+      var y = d3.time.scale().domain([new Date(2014, 0, 1), new Date(2014, 0, 1, 23, 59)]).range([0,height]);
+
+      var monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+      // VAR DATA
+
+
+      //Return Labels
+      function yAxisLabel(d){
+        if(d==12){
+          return "noon";
+        }
+        if(d < 12){
+          return d;
+        }
+        return (d - 12);
+      }
+
+      //Position X Labels at 15th of the month
+      function midMonthDates() {
+        return d3.range(0, 12).map(function(i) {
+          return new Date(2014, i, 15)
+        });
+      }
+
+      var dayLength = d3.select("#sunset").
+        append("svg:svg").
+        attr("width", width + padding * 2).
+        attr("height", height + padding * 2);
+
+      //Group to hold the axis elements
+      var axisGroup = dayLength.append("svg:g").
+        attr("transform", "translate("+padding+","+padding+")");
+
+      //Time for tick marks
+      //The go behind the fill colors,
+      //So they can span full heights / widths
+      axisGroup.selectAll(".yTicks").
+      data(d3.range(5,22)).
+      enter().append("svg:line").
+      attr("x1", -5).
+      //Rounding & adding 0.5 to fix anti-aliasing
+      attr("y1", function(d) { return d3.round(y(new Date(2014, 0, 1, d))) + 0.5; }).
+      attr("x2", width+5).
+      attr("y2", function(d) { return d3.round(y(new Date(2014, 0, 1, d))) + 0.5; }).
+      attr("stroke", "lightgray").
+      attr("class", "yTicks");
+
+      //Surrounding this chart with label
+
+      //Top Months
+      axisGroup.selectAll("text.xAxisTop").
+        data(midMonthDates).
+        enter().
+        append("svg:text").
+        text(function(d,i) { return monthLabels[i]; }).
+        attr("x", x).
+        attr("y", -8).
+        attr("text-anchor", "middle").
+        attr("class", "axis xAxisTop");
+
+      //Bottom Months
+      axisGroup.selectAll("text.xAxisBottom").
+        data(midMonthDates).
+        enter().
+        append("svg:text").
+        text(function(d,i) { return monthLabels[i]; }).
+        attr("x", x).
+        attr("y", height+15).
+        attr("text-anchor", "middle").
+        attr("class", "xAxisBottom");
+
+      //Left Times
+      axisGroup.selectAll("text.yAxisLeft").
+        data(d3.range(5,22)).
+        enter().
+        append("svg:text").
+        text(yAxisLabel).
+        attr("x", -7).
+        attr("y", function(d) { return y(new Date(2014, 0, 1, d)); }).
+        attr("dy", "3").
+        attr("class", "yAxisLeft").
+        attr("text-anchor", "end");
+
+      //Right Times
+      axisGroup.selectAll("text.yAxisRight").
+        data(d3.range(5,22)).
+        enter().
+        append("svg:text").
+        text(yAxisLabel).
+        attr("x", width+7).
+        attr("y", function(d) { return y(new Date(2014, 0, 1, d)); }).
+        attr("dy", "3").
+        attr("class","yAxisRight").
+        attr("text-anchor", "start");
+
+      //Group for the sun rise/set paths
+      var lineGroup = dayLength.append("svg:g").
+        attr("transform", "translate("+padding+", "+padding+")");
+
+      //Draw the background
+      //Uncovered = daylight
+      lineGroup.append("svg:rect").
+        attr("x", 0).
+        attr("y", 0).
+        attr("height", height).
+        attr("width", width).
+        attr("fill", "lightyellow");
+
+
+      //Main viz
+
+      var sunriseLine = d3.svg.area().
+        x(function(d) { return x(d.date); }).
+        y1(function(d) { return y(new Date(2014, 0, 1, d.sunrise[0], d.sunrise[1])); }).
+        interpolate("linear");
+
+      lineGroup.
+        append("svg:path").
+        attr("d", sunriseLine(data)).
+        attr("fill", "steelblue");
+
+      var sunsetLine = d3.svg.area().
+        x(function(d) { return x(d.date); }).
+        y0(height).
+        y1(function(d) { return y(new Date(2014, 0, 1, d.sunset[0], d.sunset[1])); }).
+        interpolate("linear");
+
+      lineGroup.append("svg:path").
+        attr("d", sunsetLine(data)).
+        attr("fill", "steelblue");
+
+      //Noon line
+      lineGroup.append("svg:line").
+        attr("x1", 0).
+        attr("y1", d3.round(y(new Date(2014, 0, 1, 12))) + 0.5).
+        attr("x2", width).
+        attr("y2", d3.round(y(new Date(2014, 0, 1, 12))) + 0.5).
+        attr("stroke", "lightgray");
     </script>
   </body>
 </html>
