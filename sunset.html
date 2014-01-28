@@ -77,8 +77,6 @@
         var day = [];
         var date = {};
 
-        //Generally wouldn't
-        //be using a nested loop
         for(m=0;m<12;m++){
           for(i=1;i<32;i++){
            day = sunData[i-1].split("  ")[m];
@@ -133,52 +131,23 @@
       attr("class", "yTicks");
 
       //Surrounding this chart with label
-
-      //Top Months
-      axisGroup.selectAll("text.xAxisTop").
-        data(midMonthDates).
+      function labelMaker(textAxis, dateRange, text, xVal, yVal, textAnchor, classVal, dy){
+        axisGroup.selectAll(textAxis).
+        data(dateRange).
         enter().
         append("svg:text").
-        text(function(d,i) { return monthLabels[i]; }).
-        attr("x", x).
-        attr("y", -8).
-        attr("text-anchor", "middle").
-        attr("class", "axis xAxisTop");
+        text(text).
+        attr("x", xVal).
+        attr("y", yVal).
+        attr("dy", dy).
+        attr("text-anchor", textAnchor).
+        attr("class", classVal);
+      }
 
-      //Bottom Months
-      axisGroup.selectAll("text.xAxisBottom").
-        data(midMonthDates).
-        enter().
-        append("svg:text").
-        text(function(d,i) { return monthLabels[i]; }).
-        attr("x", x).
-        attr("y", height+15).
-        attr("text-anchor", "middle").
-        attr("class", "xAxisBottom");
-
-      //Left Times
-      axisGroup.selectAll("text.yAxisLeft").
-        data(d3.range(5,22)).
-        enter().
-        append("svg:text").
-        text(yAxisLabel).
-        attr("x", -7).
-        attr("y", function(d) { return y(new Date(2014, 0, 1, d)); }).
-        attr("dy", "3").
-        attr("class", "yAxisLeft").
-        attr("text-anchor", "end");
-
-      //Right Times
-      axisGroup.selectAll("text.yAxisRight").
-        data(d3.range(5,22)).
-        enter().
-        append("svg:text").
-        text(yAxisLabel).
-        attr("x", width+7).
-        attr("y", function(d) { return y(new Date(2014, 0, 1, d)); }).
-        attr("dy", "3").
-        attr("class","yAxisRight").
-        attr("text-anchor", "start");
+      labelMaker("text.xAxisTop", midMonthDates, function(d,i) { return monthLabels[i]; }, x, -8, "middle", "axis xAxisTop", "0");
+      labelMaker("text.xAxisBottom", midMonthDates, function(d,i) { return monthLabels[i]; }, x, height+15, "middle", "xAxisBottom", "0");
+      labelMaker("text.yAxisLeft", d3.range(5,22), yAxisLabel, -7, function(d) { return y(new Date(2014, 0, 1, d)); }, "end", "yAxisLeft", "3");
+      labelMaker("text.yAxisRight", d3.range(5,22), yAxisLabel, width+7, function(d) { return y(new Date(2014, 0, 1, d)); }, "start", "yAxisRight", "3");
 
       //Group for the sun rise/set paths
       var lineGroup = dayLength.append("svg:g").
@@ -233,7 +202,6 @@
         on("mousemove", function(){
           d3.select("#key").html(x.invert(d3.event.offsetX - padding));
         });
-
 
     </script>
   </body>
